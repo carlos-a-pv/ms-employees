@@ -34,8 +34,4 @@ public class EmployeeController {
             return ResponseEntity.ok(employeeFound);
         }
     }
-
-    //@PutMapping
-
-    //@DeleteMapping
 }
