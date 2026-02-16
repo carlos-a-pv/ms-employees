@@ -1,6 +1,6 @@
 package co.edu.uniquindio.mapper;
 
-import co.edu.uniquindio.dto.EmployeeDTO;
+import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.model.Employee;
 
 public class Mapper {
@@ -10,8 +10,8 @@ public class Mapper {
 
         return EmployeeDTO.builder()
                 .id(e.getId())
-                .nombre(e.getNombre())
-                .cargo(e.getCargo())
+                .name(e.getName())
+                .position(e.getPosition())
                 .build();
     }
 }

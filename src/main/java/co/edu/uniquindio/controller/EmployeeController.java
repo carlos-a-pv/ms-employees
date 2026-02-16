@@ -1,11 +1,11 @@
 package co.edu.uniquindio.controller;
 
-import co.edu.uniquindio.dto.EmployeeDTO;
 import co.edu.uniquindio.dto.ResponseDTO;
+import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
+import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +19,9 @@ public class EmployeeController {
     private IEmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO){
-        EmployeeDTO employeeCreated = employeeService.createEmployee(employeeDTO);
-        return ResponseEntity.created(URI.create("/api/employees" + employeeCreated.getId())).body(employeeCreated);
+    public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody CreateEmployeeDTO createEmployeeDTO){
+        EmployeeDTO employeeCreated = employeeService.createEmployee(createEmployeeDTO);
+        return ResponseEntity.created(URI.create("/api/employees/" + employeeCreated.getId())).body(employeeCreated);
     }
 
     @GetMapping("/{id}")

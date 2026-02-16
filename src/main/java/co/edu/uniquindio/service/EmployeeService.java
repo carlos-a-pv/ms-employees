@@ -1,8 +1,8 @@
 package co.edu.uniquindio.service;
 
-import co.edu.uniquindio.dto.EmployeeDTO;
 import co.edu.uniquindio.dto.ResponseDTO;
-import co.edu.uniquindio.exception.NotFoundException;
+import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
+import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.mapper.Mapper;
 import co.edu.uniquindio.model.Employee;
 import co.edu.uniquindio.repository.EmployeeRepository;
@@ -24,11 +24,12 @@ public class EmployeeService implements IEmployeeService{
     }
 
     @Override
-    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
+    public EmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee newEmployee = Employee.builder()
-                .nombre(employeeDTO.getNombre())
-                .cargo(employeeDTO.getCargo())
+                .name(employeeDTO.getName())
+                .position(employeeDTO.getPosition())
                 .build();
+
         return Mapper.toDTO(employeeRepository.save(newEmployee));
     }
 
@@ -52,8 +53,8 @@ public class EmployeeService implements IEmployeeService{
                     .message("Employee with id: "+id+" found")
                     .employee(Employee.builder()
                             .id(emp.get().getId())
-                            .nombre(emp.get().getNombre())
-                            .cargo(emp.get().getCargo())
+                            .name(emp.get().getName())
+                            .position(emp.get().getPosition())
                             .build()).build();
         }
 
