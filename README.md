@@ -29,12 +29,13 @@ docker --version
 
 Crear una imagen del dockerfile
 ```bash
-docker build -t "image-name" 
+docker build -t 'image-name' 
 ```
 
 Ejercutar un coontenedor a partir de la imagen creada
 ```bash
-docker run -d -p 8080:8080 ms-employees 
+docker run -d -p 8080:8080 'container-name' 
 ```
 
+Verficar el funcionamineto en un navegador o un agente de pruebas (Postman, cURL)
 
