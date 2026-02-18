@@ -27,6 +27,8 @@ Verifica Docker:
 docker --version 
 ```
 
+## ▶ Ejecucción
+
 Crear una imagen del dockerfile
 ```bash
 docker build -t 'image-name' 
