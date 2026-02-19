@@ -4,6 +4,7 @@ import co.edu.uniquindio.dto.ResponseDTO;
 import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.service.IEmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class EmployeeController {
     private IEmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody CreateEmployeeDTO createEmployeeDTO){
+    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO){
         EmployeeDTO employeeCreated = employeeService.createEmployee(createEmployeeDTO);
         return ResponseEntity.created(URI.create("/api/employees/" + employeeCreated.getId())).body(employeeCreated);
     }
