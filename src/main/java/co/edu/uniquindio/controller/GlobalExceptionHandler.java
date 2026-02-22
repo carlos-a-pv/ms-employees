@@ -1,36 +1,42 @@
 package co.edu.uniquindio.controller;
 
-import co.edu.uniquindio.dto.GlobalHandlerDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.http.*;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.net.URI;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Optional;
 
-@ControllerAdvice
-public class GlobalExceptionHandler {
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<GlobalHandlerDTO> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(GlobalHandlerDTO.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status("404")
-                        .error("Resource not found")
-                        .path("api/employees")
-                        .build());
+@RestControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ProblemDetail problemDetail = handleValidationException(ex);
+        return ResponseEntity.status(status.value()).body(problemDetail);
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<GlobalHandlerDTO> handle404(NoHandlerFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GlobalHandlerDTO.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status("404")
-                        .error("Resource not found")
-                        .path(ex.getRequestURL())
-                .build());
+    private ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
+        String details = getErrorsDetails(ex);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), details);
+        problemDetail.setType(URI.create("http://localhost:8080/errors/bad-request"));
+        problemDetail.setTitle("Bad request");
+        problemDetail.setInstance(ex.getBody().getInstance());
+        problemDetail.setProperty("timestamp", Instant.now()); // additional data
+        return problemDetail;
+    }
+
+    private String getErrorsDetails(MethodArgumentNotValidException ex) {
+        return Optional.of(ex.getDetailMessageArguments())
+                .map(args -> Arrays.stream(args)
+                        .filter(msg -> !ObjectUtils.isEmpty(msg))
+                        .reduce("Please make sure to provide a valid request, ", (a, b) -> a + " " + b)
+                )
+                .orElse("").toString();
     }
 }

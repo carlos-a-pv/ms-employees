@@ -1,12 +1,10 @@
 package co.edu.uniquindio.controller;
 
-import co.edu.uniquindio.dto.ResponseDTO;
 import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.service.IEmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +24,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDTO> queryEmployeeById(@PathVariable Long id){
-        ResponseDTO employeeFound = employeeService.getEmployeeById(id);
+    public ResponseEntity<EmployeeDTO> queryEmployeeById(@PathVariable Long id){
+        EmployeeDTO employeeFound = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(employeeFound);
 
-        if (employeeFound.getEmployee() == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(employeeFound);
-        }else{
-            return ResponseEntity.ok(employeeFound);
-        }
+
     }
 }
