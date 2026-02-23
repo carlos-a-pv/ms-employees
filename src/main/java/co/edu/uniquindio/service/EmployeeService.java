@@ -2,6 +2,7 @@ package co.edu.uniquindio.service;
 
 import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.employee.EmployeeDTO;
+import co.edu.uniquindio.exception.EmailAlreadyExistException;
 import co.edu.uniquindio.exception.UserNotFoundException;
 import co.edu.uniquindio.mapper.Mapper;
 import co.edu.uniquindio.model.Employee;
@@ -21,14 +22,22 @@ public class EmployeeService implements IEmployeeService{
 
     @Override
     public List<EmployeeDTO> getEmployees() {
-        return List.of();
+        return employeeRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
     public EmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
+
+        if(employeeRepository.existsByEmail(employeeDTO.getEmail())){
+            throw new EmailAlreadyExistException(employeeDTO.getEmail(), "/api/employees");
+        }
+
         Employee newEmployee = Employee.builder()
                 .name(employeeDTO.getName())
                 .position(employeeDTO.getPosition())
+                .email(employeeDTO.getEmail())
+                .departmentId(employeeDTO.getDeparmentId())
+                .hiringDate(employeeDTO.getHiringDate())
                 .build();
 
         return Mapper.toDTO(employeeRepository.save(newEmployee));

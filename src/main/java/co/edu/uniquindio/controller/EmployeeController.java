@@ -9,9 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/employees")
+@RequestMapping("/api/v2/employees")
 public class EmployeeController {
 
     @Autowired
@@ -27,7 +28,11 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> queryEmployeeById(@PathVariable Long id){
         EmployeeDTO employeeFound = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employeeFound);
+    }
 
-
+    @GetMapping
+    public ResponseEntity<List<EmployeeDTO>> getEmployees(){
+        List<EmployeeDTO> list = employeeService.getEmployees();
+        return ResponseEntity.ok(list);
     }
 }

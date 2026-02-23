@@ -12,6 +12,9 @@ public class Mapper {
                 .id(e.getId())
                 .name(e.getName())
                 .position(e.getPosition())
+                .email(e.getEmail())
+                .deparmentId(e.getDepartmentId())
+                .hiringDate(e.getHiringDate())
                 .build();
     }
 }
