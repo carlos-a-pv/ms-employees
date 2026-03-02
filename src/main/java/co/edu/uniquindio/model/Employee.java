@@ -18,6 +18,6 @@ public class Employee {
     private String name;
     private String position;
     private String email;
-    private String departmentId;
+    private Long departmentId;
     private Date hiringDate;
 }

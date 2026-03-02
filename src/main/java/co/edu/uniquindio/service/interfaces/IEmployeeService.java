@@ -1,4 +1,4 @@
-package co.edu.uniquindio.service;
+package co.edu.uniquindio.service.interfaces;
 
 
 import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;

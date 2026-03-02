@@ -21,8 +21,8 @@ public class CreateEmployeeDTO {
     private String position;
     @NotBlank @Email
     private String email;
-    @NotBlank
-    private String deparmentId;
+    @NotNull
+    private Long departmentId;
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date hiringDate;
