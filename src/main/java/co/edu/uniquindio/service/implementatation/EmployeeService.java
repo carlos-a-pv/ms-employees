@@ -1,5 +1,7 @@
 package co.edu.uniquindio.service.implementatation;
 
+import co.edu.uniquindio.client.DepartmentClient;
+import co.edu.uniquindio.dto.department.DepartmentDTO;
 import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.employee.EmployeeDTO;
 import co.edu.uniquindio.exception.EmailAlreadyExistException;
@@ -19,6 +21,8 @@ public class EmployeeService implements IEmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private DepartmentClient departmentClient;
 
     @Override
     public List<EmployeeDTO> getEmployees() {
@@ -27,6 +31,8 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public EmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
+
+        departmentClient.getDepartmentById(employeeDTO.getDepartmentId());
 
         if(employeeRepository.existsByEmail(employeeDTO.getEmail())){
             throw new EmailAlreadyExistException(employeeDTO.getEmail(), "/api/employees");

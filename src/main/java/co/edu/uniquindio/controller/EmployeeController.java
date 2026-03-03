@@ -34,19 +34,19 @@ public class EmployeeController {
             @ApiResponse(responseCode = "201", description = "Employee created"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO){
-        departmentService.getDepartmentById(createEmployeeDTO.getDepartmentId());
 
+    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO){
+        //departmentService.getDepartmentById(createEmployeeDTO.getDepartmentId());
         EmployeeDTO employeeCreated = employeeService.createEmployee(createEmployeeDTO);
         return ResponseEntity.created(URI.create("/api/employees/" + employeeCreated.getId())).body(employeeCreated);
     }
 
     @GetMapping("/{id}")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Department found"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     @Operation(summary = "Consulting a employee")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employee found"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
     public ResponseEntity<EmployeeDTO> queryEmployeeById(@PathVariable Long id){
         EmployeeDTO employeeFound = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employeeFound);
@@ -54,6 +54,9 @@ public class EmployeeController {
 
     @GetMapping
     @Operation(summary = "Consulting the employees")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "all employees")
+    })
     public ResponseEntity<List<EmployeeDTO>> getEmployees(){
         List<EmployeeDTO> list = employeeService.getEmployees();
         return ResponseEntity.ok(list);
