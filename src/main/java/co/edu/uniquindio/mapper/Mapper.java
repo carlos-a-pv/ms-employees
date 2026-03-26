@@ -1,6 +1,6 @@
 package co.edu.uniquindio.mapper;
 
-import co.edu.uniquindio.dto.employee.EmployeeDTO;
+import co.edu.uniquindio.dto.EmployeeDTO;
 import co.edu.uniquindio.model.Employee;
 
 public class Mapper {
@@ -12,6 +12,9 @@ public class Mapper {
                 .id(e.getId())
                 .name(e.getName())
                 .position(e.getPosition())
+                .email(e.getEmail())
+                .departmentId(e.getDepartmentId())
+                .hiringDate(e.getHiringDate())
                 .build();
     }
 }

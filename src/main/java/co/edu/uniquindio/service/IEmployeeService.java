@@ -1,8 +1,8 @@
 package co.edu.uniquindio.service;
 
 
-import co.edu.uniquindio.dto.employee.CreateEmployeeDTO;
-import co.edu.uniquindio.dto.employee.EmployeeDTO;
+import co.edu.uniquindio.dto.CreateEmployeeDTO;
+import co.edu.uniquindio.dto.EmployeeDTO;
 
 import java.util.List;
 
