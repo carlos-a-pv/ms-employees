@@ -3,6 +3,7 @@ package co.edu.uniquindio.controller;
 import co.edu.uniquindio.dto.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.DepartmentDTO;
 import co.edu.uniquindio.dto.EmployeeDTO;
+import co.edu.uniquindio.error.ApiError;
 import co.edu.uniquindio.service.IEmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,15 +39,20 @@ public class EmployeeController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Employee created",
-                    content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = EmployeeDTO.class),
-                    examples = @ExampleObject(name = "Created", value = "{\"id\": 1, \"name\": \"Carlos\", \"position\": \"Developer.\"}"))),
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeDTO.class),
+                            examples = @ExampleObject(name = "Created", value = "{\"id\": 1, \"name\": \"Carlos\", \"position\": \"Developer.\"}"))),
             @ApiResponse(responseCode = "400", description = "Bad request",
-                    content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = EmployeeDTO.class),
-                    examples = @ExampleObject(name = "Bad request", value = ""))),
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(name = "Bad request", value = ""))),
             @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    ))
     })
     @PostMapping
     public ResponseEntity<EmployeeDTO> createEmployee(
@@ -72,10 +78,17 @@ public class EmployeeController {
                     )),
             @ApiResponse(responseCode = "404",
                     description = "Employee not found",
-                    content = @Content),
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(name = "Employee not found", value = " {\"status\":404, \"message\": \"User with id specified not found\", \"path\": \"/api/employees/{id}\" }")
+                    )),
             @ApiResponse(responseCode = "500",
                     description = "Internal server error",
-                    content = @Content)
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    ))
     })
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> queryEmployeeById(
