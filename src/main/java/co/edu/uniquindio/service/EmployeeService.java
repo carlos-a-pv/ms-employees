@@ -19,10 +19,12 @@ import java.util.Optional;
 public class EmployeeService implements IEmployeeService{
     private final EmployeeRepository employeeRepository;
     private final DepartmentClient departmentClient;
+    private final MessageProducerService  messageProducerService;
 
-    public EmployeeService(EmployeeRepository employeeRepository,  DepartmentClient departmentClient) {
+    public EmployeeService(EmployeeRepository employeeRepository,  DepartmentClient departmentClient,  MessageProducerService messageProducerService) {
         this.employeeRepository = employeeRepository;
         this.departmentClient = departmentClient;
+        this.messageProducerService = messageProducerService;
     }
 
     @Override
@@ -47,7 +49,11 @@ public class EmployeeService implements IEmployeeService{
                 .hiringDate(employeeDTO.getHiringDate())
                 .build();
 
-        return Mapper.toDTO(employeeRepository.save(newEmployee));
+        Employee employeeSaved =  employeeRepository.save(newEmployee);
+
+        messageProducerService.sendMessage(employeeSaved.getEmail());
+
+        return Mapper.toDTO(employeeSaved);
     }
 
     @Override
