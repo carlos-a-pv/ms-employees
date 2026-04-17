@@ -4,12 +4,12 @@ import co.edu.uniquindio.client.DepartmentClient;
 import co.edu.uniquindio.dto.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.DepartmentDTO;
 import co.edu.uniquindio.dto.EmployeeDTO;
+import co.edu.uniquindio.dto.MessageNotificationDTO;
 import co.edu.uniquindio.exception.UserEmailAlreadyExists;
 import co.edu.uniquindio.exception.UserNotFoundException;
 import co.edu.uniquindio.mapper.Mapper;
 import co.edu.uniquindio.model.Employee;
 import co.edu.uniquindio.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class EmployeeService implements IEmployeeService{
 
     @Override
     public List<EmployeeDTO> getEmployees() {
-        return List.of();
+        return employeeRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
@@ -51,7 +51,11 @@ public class EmployeeService implements IEmployeeService{
 
         Employee employeeSaved =  employeeRepository.save(newEmployee);
 
-        messageProducerService.sendMessage(employeeSaved.getEmail());
+        messageProducerService.sendMessage(MessageNotificationDTO.builder()
+                .type("BIENVENIDA")
+                .receiver(employeeSaved.getEmail())
+                .message("Bienvenido "+employeeSaved.getName())
+                .build());
 
         return Mapper.toDTO(employeeSaved);
     }
