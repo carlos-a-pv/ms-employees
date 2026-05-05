@@ -5,11 +5,14 @@ import co.edu.uniquindio.dto.*;
 import co.edu.uniquindio.exception.UserEmailAlreadyExists;
 import co.edu.uniquindio.exception.UserHiredAlready;
 import co.edu.uniquindio.exception.UserNotFoundException;
-import co.edu.uniquindio.infrastructure.messaging.EmployeeCreatedEvent;
+import co.edu.uniquindio.infrastructure.events.EmployeeCreatedEvent;
+import co.edu.uniquindio.infrastructure.events.EmployeeDeletedEvent;
+import co.edu.uniquindio.infrastructure.messaging.MessageProducerService;
 import co.edu.uniquindio.mapper.Mapper;
 import co.edu.uniquindio.model.Employee;
 import co.edu.uniquindio.model.State;
 import co.edu.uniquindio.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +24,11 @@ import java.util.Optional;
 public class EmployeeService implements IEmployeeService{
     private final EmployeeRepository employeeRepository;
     private final DepartmentClient departmentClient;
-    private final MessageProducerService  messageProducerService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public EmployeeService(EmployeeRepository employeeRepository,  DepartmentClient departmentClient,  MessageProducerService messageProducerService, ApplicationEventPublisher applicationEventPublisher) {
         this.employeeRepository = employeeRepository;
         this.departmentClient = departmentClient;
-        this.messageProducerService = messageProducerService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -35,7 +36,7 @@ public class EmployeeService implements IEmployeeService{
     public List<EmployeeDTO> getEmployees() {
         return employeeRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
-
+    @Transactional
     @Override
     public EmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
 
@@ -64,9 +65,9 @@ public class EmployeeService implements IEmployeeService{
         return null;
     }
 
+    @Transactional
     @Override
     public ApiResponse deleteEmployee(Long id) {
-
         Optional<Employee> employee =Optional.of(employeeRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id, "/api/employees")));
         Employee employeeFound = employee.get();
 
@@ -76,12 +77,7 @@ public class EmployeeService implements IEmployeeService{
         employeeFound.setState(State.LAYOFF);
         employeeRepository.save(employeeFound);
 
-        messageProducerService.sendMessage(EmployeeDeletedEventDTO
-                .builder()
-                .id(employeeFound.getId())
-                .name(employeeFound.getName())
-                .email(employeeFound.getEmail())
-                .build());
+        applicationEventPublisher.publishEvent(new EmployeeDeletedEvent(employeeFound));
 
         return ApiResponse.builder()
                 .status(200)

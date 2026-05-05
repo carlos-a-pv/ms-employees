@@ -1,4 +1,4 @@
-package co.edu.uniquindio.service;
+package co.edu.uniquindio.infrastructure.messaging;
 
 
 import co.edu.uniquindio.config.RabbitMQConfig;

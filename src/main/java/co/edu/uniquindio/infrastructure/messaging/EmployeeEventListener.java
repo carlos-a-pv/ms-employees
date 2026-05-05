@@ -3,8 +3,9 @@ package co.edu.uniquindio.infrastructure.messaging;
 import co.edu.uniquindio.dto.EmployeeCreatedEventDTO;
 import co.edu.uniquindio.dto.EmployeeDeletedEventDTO;
 import co.edu.uniquindio.exception.EventPublisingException;
+import co.edu.uniquindio.infrastructure.events.EmployeeCreatedEvent;
+import co.edu.uniquindio.infrastructure.events.EmployeeDeletedEvent;
 import co.edu.uniquindio.model.Employee;
-import co.edu.uniquindio.service.MessageProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,17 +23,36 @@ public class EmployeeEventListener {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleEmployeeCreated(EmployeeCreatedEventDTO event){
+    public void handleEmployeeCreated(EmployeeCreatedEvent event){
         try{
+            Employee employee = event.getEmployee();
+
             messageProducerService.sendMessage(
                     EmployeeCreatedEventDTO.builder()
-                            .id(event.id())
-                            .name(event.name())
-                            .email(event.email())
-                            .departmentId(event.departmentId())
-                            .hiringDate(event.hiringDate())
+                            .id(employee.getId())
+                            .name(employee.getName())
+                            .email(employee.getEmail())
+                            .departmentId(employee.getDepartmentId())
+                            .hiringDate(employee.getHiringDate())
                             .build());
         } catch (EventPublisingException ex){
+            LOGGER.error("Error enviando evento a RabbitMQ", ex);
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleEmployeeDeleted(EmployeeDeletedEvent event){
+        try {
+            Employee employee = event.getEmployee();
+
+            messageProducerService.sendMessage(
+                    EmployeeDeletedEventDTO.builder()
+                            .id(employee.getId())
+                            .name(employee.getName())
+                            .email(employee.getEmail())
+                            .build()
+            );
+        }catch (EventPublisingException ex){
             LOGGER.error("Error enviando evento a RabbitMQ", ex);
         }
     }

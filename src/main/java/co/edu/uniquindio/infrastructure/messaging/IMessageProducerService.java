@@ -1,9 +1,7 @@
-package co.edu.uniquindio.service;
+package co.edu.uniquindio.infrastructure.messaging;
 
 import co.edu.uniquindio.dto.EmployeeCreatedEventDTO;
 import co.edu.uniquindio.dto.EmployeeDeletedEventDTO;
-import co.edu.uniquindio.dto.MessageNotificationDTO;
-import co.edu.uniquindio.dto.MessageProfileDTO;
 
 public interface IMessageProducerService {
 
@@ -11,5 +9,4 @@ public interface IMessageProducerService {
 
     void sendMessage(EmployeeDeletedEventDTO message);
 
-    //void sendMessageProfileQueue(EmployeeCreatedEventDTO message);
 }

@@ -1,14 +1,14 @@
-package co.edu.uniquindio.infrastructure.messaging;
+package co.edu.uniquindio.infrastructure.events;
 
 import co.edu.uniquindio.model.Employee;
 import lombok.Getter;
 
 @Getter
-public class EmployeeCreatedEvent {
+public class EmployeeDeletedEvent {
 
     private final Employee employee;
 
-    public EmployeeCreatedEvent(Employee employee) {
+    public EmployeeDeletedEvent(Employee employee) {
         this.employee = employee;
     }
 }
