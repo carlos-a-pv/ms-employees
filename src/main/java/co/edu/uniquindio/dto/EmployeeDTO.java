@@ -1,5 +1,6 @@
 package co.edu.uniquindio.dto;
 
+import co.edu.uniquindio.model.State;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -30,4 +31,6 @@ public class EmployeeDTO {
     @Schema(description = "Hiring date of the employee was contracted", example = "02-02-2026")
     private Date hiringDate;
 
+    @Schema(description = "State of employee actually", example = "HIRED")
+    private State state;
 }

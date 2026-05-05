@@ -102,6 +102,42 @@ public class EmployeeController {
         EmployeeDTO employeeFound = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employeeFound);
     }
+    @Operation(
+            summary = "Delete employee by ID",
+            description = "Deletes a specific employee using their unique identifier"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Employee successfully deleted",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = co.edu.uniquindio.dto.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Employee successfully deleted",
+                                    value = "{\"status\":200, \"path\": \"/api/employees/{id}\", \"data\": \"Employee successfully deleted\" }"
+                            )
+                    )),
+            @ApiResponse(responseCode = "404",
+                    description = "Employee not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    name = "Employee not found",
+                                    value = "{\"status\":404, \"message\": \"User with id specified not found\", \"path\": \"/api/employees/{id}\" }"
+                            )
+                    )),
+            @ApiResponse(responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    ))
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<co.edu.uniquindio.dto.ApiResponse> deleteEmployee(@PathVariable Long id){
+        return ResponseEntity.ok(employeeService.deleteEmployee(id));
+    }
 
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(){
         return ResponseEntity.ok(employeeService.getEmployees());

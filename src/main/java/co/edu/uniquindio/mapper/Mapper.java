@@ -15,6 +15,7 @@ public class Mapper {
                 .email(e.getEmail())
                 .departmentId(e.getDepartmentId())
                 .hiringDate(e.getHiringDate())
+                .state(e.getState())
                 .build();
     }
 }

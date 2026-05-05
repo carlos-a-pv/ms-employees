@@ -21,4 +21,5 @@ public class Employee {
     private String email;
     private Long departmentId;
     private Date hiringDate;
+    private State state;
 }

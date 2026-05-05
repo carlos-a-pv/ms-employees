@@ -1,6 +1,7 @@
 package co.edu.uniquindio.service;
 
 
+import co.edu.uniquindio.dto.ApiResponse;
 import co.edu.uniquindio.dto.CreateEmployeeDTO;
 import co.edu.uniquindio.dto.EmployeeDTO;
 
@@ -14,7 +15,7 @@ public interface IEmployeeService {
 
     EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO);
 
-    void deleteEmployee(Long id);
+    ApiResponse deleteEmployee(Long id);
 
     EmployeeDTO getEmployeeById(Long id);
 

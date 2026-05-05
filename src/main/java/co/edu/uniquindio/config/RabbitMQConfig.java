@@ -4,7 +4,12 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +21,6 @@ public class RabbitMQConfig {
 
     public static final String NOTIFICATION_ONBOARDING_QUEUE = "notification.onboarding.queue";
     public static final String PROFILE_ONBOARDING_QUEUE = "profile.onboarding.queue";
-
-
 
     @Bean
     public FanoutExchange onboardingExchange() {

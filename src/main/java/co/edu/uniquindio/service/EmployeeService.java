@@ -1,17 +1,19 @@
 package co.edu.uniquindio.service;
 
 import co.edu.uniquindio.client.DepartmentClient;
-import co.edu.uniquindio.dto.CreateEmployeeDTO;
-import co.edu.uniquindio.dto.DepartmentDTO;
-import co.edu.uniquindio.dto.EmployeeDTO;
-import co.edu.uniquindio.dto.MessageNotificationDTO;
+import co.edu.uniquindio.dto.*;
 import co.edu.uniquindio.exception.UserEmailAlreadyExists;
+import co.edu.uniquindio.exception.UserHiredAlready;
 import co.edu.uniquindio.exception.UserNotFoundException;
+import co.edu.uniquindio.infrastructure.messaging.EmployeeCreatedEvent;
 import co.edu.uniquindio.mapper.Mapper;
 import co.edu.uniquindio.model.Employee;
+import co.edu.uniquindio.model.State;
 import co.edu.uniquindio.repository.EmployeeRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +22,13 @@ public class EmployeeService implements IEmployeeService{
     private final EmployeeRepository employeeRepository;
     private final DepartmentClient departmentClient;
     private final MessageProducerService  messageProducerService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public EmployeeService(EmployeeRepository employeeRepository,  DepartmentClient departmentClient,  MessageProducerService messageProducerService) {
+    public EmployeeService(EmployeeRepository employeeRepository,  DepartmentClient departmentClient,  MessageProducerService messageProducerService, ApplicationEventPublisher applicationEventPublisher) {
         this.employeeRepository = employeeRepository;
         this.departmentClient = departmentClient;
         this.messageProducerService = messageProducerService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -47,16 +51,11 @@ public class EmployeeService implements IEmployeeService{
                 .email(employeeDTO.getEmail())
                 .departmentId(departmentDTO.getId())
                 .hiringDate(employeeDTO.getHiringDate())
+                .state(State.HIRED)
                 .build();
 
         Employee employeeSaved =  employeeRepository.save(newEmployee);
-
-        messageProducerService.sendMessage(MessageNotificationDTO.builder()
-                .type("BIENVENIDA")
-                .receiver(employeeSaved.getEmail())
-                .message("Bienvenido "+employeeSaved.getName())
-                .build());
-
+        applicationEventPublisher.publishEvent(new EmployeeCreatedEvent(employeeSaved));
         return Mapper.toDTO(employeeSaved);
     }
 
@@ -66,8 +65,30 @@ public class EmployeeService implements IEmployeeService{
     }
 
     @Override
-    public void deleteEmployee(Long id) {
+    public ApiResponse deleteEmployee(Long id) {
 
+        Optional<Employee> employee =Optional.of(employeeRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id, "/api/employees")));
+        Employee employeeFound = employee.get();
+
+        if(employeeFound.getState().equals(State.LAYOFF)){
+            throw new UserHiredAlready(employeeFound.getId(), "/api/employees/");
+        }
+        employeeFound.setState(State.LAYOFF);
+        employeeRepository.save(employeeFound);
+
+        messageProducerService.sendMessage(EmployeeDeletedEventDTO
+                .builder()
+                .id(employeeFound.getId())
+                .name(employeeFound.getName())
+                .email(employeeFound.getEmail())
+                .build());
+
+        return ApiResponse.builder()
+                .status(200)
+                .path("api/employees")
+                .timestamp(LocalDateTime.now())
+                .data("Employee deleted successfully")
+                .build();
     }
 
     @Override
